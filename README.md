@@ -117,7 +117,6 @@ proyecto_sistema_gestion_horaria/
 ├── styles.css         → Sistema de diseño con tokens CSS, dark mode, accesibilidad, animaciones
 ├── script.js          → Lógica interactiva completa (D&D, optimización, conflictos, edición)
 ├── README.md          → Este archivo
-└── documentos/        → PDFs de entregables previos del curso
 ```
 
 ---
