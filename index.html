@@ -3,12 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sistema Adaptativo de Gestión Horaria – Prototipo interactivo para la gestión inteligente de horarios académicos.">
-  <title>Sistema Adaptativo de Gestión Horaria</title>
+  <meta name="description" content="SmartSchedule FISI – Sistema Adaptativo de Gestión Horaria. Prototipo final interactivo para la gestión inteligente de horarios académicos con optimización de tiempos muertos y resolución de conflictos.">
+  <meta name="keywords" content="horario, gestión académica, FISI, SmartSchedule, optimización">
+  <meta name="author" content="Grupo 02 – DIU FISI">
+  <title>SmartSchedule FISI – Sistema Adaptativo de Gestión Horaria</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
 </head>
 <body>
+
+  <!-- Skip Navigation (Accesibilidad WCAG 2.1) -->
+  <a class="skip-nav" href="#calendarGrid" id="skipNav">Ir al contenido principal</a>
+
+  <!-- ARIA Live Region para anuncios dinámicos -->
+  <div class="sr-only" aria-live="polite" aria-atomic="true" id="liveAnnouncer"></div>
 
   <!-- ====== APP LAYOUT ====== -->
   <div class="app-layout">
@@ -18,14 +26,19 @@
       <div class="topbar-left">
         <div class="topbar-logo" aria-hidden="true">📅</div>
         <div>
-          <div class="topbar-title">Gestión Horaria Adaptativa</div>
+          <div class="topbar-title">SmartSchedule FISI</div>
           <div class="topbar-subtitle">Semestre 2026-II · Semana 25</div>
         </div>
       </div>
 
       <div class="topbar-right">
+        <!-- Stats Toggle -->
+        <button class="topbar-icon-btn" id="statsToggleBtn" aria-label="Panel de estadísticas" title="Estadísticas del horario">
+          📊
+        </button>
+
         <!-- Notification Bell -->
-        <button class="notification-btn" id="notificationBtn" aria-label="Notificaciones" title="Notificaciones">
+        <button class="topbar-icon-btn notification-btn" id="notificationBtn" aria-label="Notificaciones" title="Notificaciones">
           🔔
           <span class="notification-badge" id="notifBadge"></span>
         </button>
@@ -48,7 +61,7 @@
             </div>
           </div>
           <div class="notification-item">
-            <div class="notification-item-icon info">✅</div>
+            <div class="notification-item-icon success">✅</div>
             <div>
               <div class="notification-item-text">Tu horario semanal ha sido optimizado automáticamente.</div>
               <div class="notification-item-time">Hace 3 horas</div>
@@ -56,9 +69,9 @@
           </div>
         </div>
 
-        <!-- Accessibility Toggle -->
-        <div class="accessibility-toggle" id="accessibilityToggle" role="switch" aria-checked="false" aria-label="Modo de accesibilidad" tabindex="0" title="Modo Accesibilidad (WCAG 2.1)">
-          <span class="accessibility-toggle-label">♿ Accesibilidad</span>
+        <!-- Dark/Light Mode Toggle -->
+        <div class="accessibility-toggle" id="accessibilityToggle" role="switch" aria-checked="false" aria-label="Cambiar entre modo oscuro y modo claro" tabindex="0" title="Cambiar tema (Oscuro / Claro)">
+          <span class="accessibility-toggle-label" id="themeToggleLabel">🌙 Modo Oscuro</span>
           <div class="toggle-switch"></div>
         </div>
       </div>
@@ -70,10 +83,18 @@
       <!-- Tabs -->
       <div class="sidebar-tabs" role="tablist">
         <button class="sidebar-tab active" id="tabCourses" role="tab" aria-selected="true" aria-controls="panelCourses" data-tab="courses">
-          📚 Cursos Disponibles
+          📚 Cursos
         </button>
         <button class="sidebar-tab" id="tabPending" role="tab" aria-selected="false" aria-controls="panelPending" data-tab="pending">
           📋 Pendientes
+        </button>
+      </div>
+
+      <!-- Batch Assign Bar -->
+      <div class="batch-bar" id="batchBar">
+        <span class="batch-bar-count" id="batchCount">0 seleccionados</span>
+        <button class="batch-bar-btn" id="batchAssignBtn" aria-label="Asignar cursos seleccionados al horario">
+          🚀 Asignar
         </button>
       </div>
 
@@ -96,7 +117,7 @@
     </aside>
 
     <!-- ---- MAIN CALENDAR ---- -->
-    <main class="main-area" role="main">
+    <main class="main-area" role="main" id="mainArea">
 
       <!-- Calendar Header -->
       <div class="calendar-header">
@@ -104,16 +125,92 @@
           <h1 class="calendar-title">Vista Semanal</h1>
           <span class="calendar-week-label">16 – 22 Junio, 2026</span>
         </div>
-        <button class="btn-add-block" id="btnAddBlock" aria-label="Agregar nuevo bloque horario" title="Agregar nuevo bloque">
-          <span class="plus-icon">+</span>
-          Agregar Bloque
-        </button>
+        <div class="calendar-header-right">
+          <button class="btn-optimize" id="btnOptimize" aria-label="Optimizar tiempos muertos del horario" title="Optimizar horario automáticamente">
+            <span class="optimize-icon">⚡</span>
+            Optimizar
+          </button>
+          <button class="btn-add-block" id="btnAddBlock" aria-label="Agregar nuevo bloque horario" title="Agregar nuevo bloque">
+            <span class="plus-icon">+</span>
+            Agregar Bloque
+          </button>
+        </div>
       </div>
 
       <!-- Calendar Grid -->
-      <div class="calendar-scroll">
+      <div class="calendar-scroll" id="calendarScroll">
         <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="Calendario semanal">
           <!-- Dynamically generated by JS -->
+        </div>
+      </div>
+
+      <!-- Statistics Panel (Collapsible) -->
+      <div class="stats-panel" id="statsPanel" aria-label="Panel de estadísticas del horario">
+        <div class="stats-panel-header">
+          <h2 class="stats-panel-title">📊 Estadísticas del Horario</h2>
+          <button class="stats-panel-close" id="statsPanelClose" aria-label="Cerrar panel de estadísticas">&times;</button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-icon">📈</div>
+            <div class="stat-card-body">
+              <div class="stat-card-label">Ocupación Semanal</div>
+              <div class="stat-card-value" id="statOccupancy">0%</div>
+              <div class="stat-progress-track">
+                <div class="stat-progress-bar occupancy" id="statOccupancyBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">⏳</div>
+            <div class="stat-card-body">
+              <div class="stat-card-label">Tiempos Muertos</div>
+              <div class="stat-card-value" id="statDeadTimes">0 hrs</div>
+              <div class="stat-progress-track">
+                <div class="stat-progress-bar dead-times" id="statDeadTimesBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">🔴</div>
+            <div class="stat-card-body">
+              <div class="stat-card-label">Urgente</div>
+              <div class="stat-card-value" id="statUrgent">0 hrs</div>
+              <div class="stat-progress-track">
+                <div class="stat-progress-bar urgent" id="statUrgentBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">🟡</div>
+            <div class="stat-card-body">
+              <div class="stat-card-label">Moderada</div>
+              <div class="stat-card-value" id="statModerate">0 hrs</div>
+              <div class="stat-progress-track">
+                <div class="stat-progress-bar moderate" id="statModerateBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">🟢</div>
+            <div class="stat-card-body">
+              <div class="stat-card-label">Flexible</div>
+              <div class="stat-card-value" id="statFlexible">0 hrs</div>
+              <div class="stat-progress-track">
+                <div class="stat-progress-bar flexible" id="statFlexibleBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon">📦</div>
+            <div class="stat-card-body">
+              <div class="stat-card-label">Total Bloques</div>
+              <div class="stat-card-value" id="statTotalBlocks">0</div>
+              <div class="stat-progress-track">
+                <div class="stat-progress-bar total" id="statTotalBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -130,17 +227,14 @@
       </div>
       <div class="modal-body">
         <form id="addBlockForm" autocomplete="off">
-
           <div class="form-group">
             <label class="form-label" for="courseName">Nombre del Curso</label>
             <input class="form-input" type="text" id="courseName" placeholder="Ej: Álgebra Lineal" required>
           </div>
-
           <div class="form-group">
             <label class="form-label" for="courseCode">Código / Grupo</label>
             <input class="form-input" type="text" id="courseCode" placeholder="Ej: MAT-201 · G01">
           </div>
-
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="daySelect">Día</label>
@@ -163,7 +257,6 @@
               </select>
             </div>
           </div>
-
           <div class="form-group">
             <label class="form-label">Prioridad</label>
             <div class="priority-options">
@@ -190,13 +283,126 @@
               </div>
             </div>
           </div>
-
         </form>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="modalCancel" type="button">Cancelar</button>
         <button class="btn btn-primary" id="modalSave" type="button">Agregar al Horario</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ====== MODAL: Conflict Resolution ====== -->
+  <div class="modal-overlay" id="conflictModalOverlay" role="dialog" aria-modal="true" aria-labelledby="conflictModalTitle">
+    <div class="modal conflict-modal">
+      <div class="modal-header conflict-modal-header">
+        <div class="conflict-header-left">
+          <div class="conflict-modal-icon">⚠️</div>
+          <div>
+            <h2 class="modal-title" id="conflictModalTitle">Conflicto Horario Detectado</h2>
+            <p class="conflict-modal-subtitle" id="conflictModalSubtitle"></p>
+          </div>
+        </div>
+        <button class="modal-close" id="conflictModalClose" aria-label="Cerrar modal de conflicto">&times;</button>
+      </div>
+      <div class="modal-body conflict-modal-body">
+        <div class="conflict-info" id="conflictInfo">
+          <!-- Populated by JS -->
+        </div>
+        <div class="conflict-options" id="conflictOptions">
+          <!-- Populated by JS -->
+        </div>
+        <div class="conflict-suggestions" id="conflictSuggestions">
+          <div class="conflict-suggestions-title">💡 Horarios alternativos disponibles:</div>
+          <div class="conflict-suggestions-list" id="conflictSuggestionsList">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== POPOVER: Block Detail ====== -->
+  <div class="block-popover" id="blockPopover" role="dialog" aria-label="Detalle del bloque horario">
+    <div class="popover-header">
+      <h3 class="popover-title" id="popoverTitle"></h3>
+      <button class="popover-close" id="popoverClose" aria-label="Cerrar detalle del bloque">&times;</button>
+    </div>
+    <div class="popover-body">
+      <div class="popover-meta" id="popoverMeta"></div>
+      <div class="popover-priority" id="popoverPriority"></div>
+    </div>
+    <div class="popover-actions">
+      <button class="popover-action-btn edit" id="popoverEdit" aria-label="Editar bloque">
+        ✏️ Editar
+      </button>
+      <button class="popover-action-btn delete" id="popoverDelete" aria-label="Eliminar bloque">
+        🗑️ Eliminar
+      </button>
+    </div>
+  </div>
+
+  <!-- ====== MODAL: Edit Block ====== -->
+  <div class="modal-overlay" id="editModalOverlay" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="editModalTitle">✏️ Editar Bloque Horario</h2>
+        <button class="modal-close" id="editModalClose" aria-label="Cerrar modal de edición">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editBlockForm" autocomplete="off">
+          <div class="form-group">
+            <label class="form-label" for="editCourseName">Nombre del Curso</label>
+            <input class="form-input" type="text" id="editCourseName" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editCourseCode">Código / Grupo</label>
+            <input class="form-input" type="text" id="editCourseCode">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Prioridad</label>
+            <div class="priority-options">
+              <div class="priority-option">
+                <input type="radio" name="editPriority" id="editPriorityUrgent" value="urgent">
+                <label for="editPriorityUrgent">
+                  <span class="priority-color-circle urgent"></span>
+                  Urgente
+                </label>
+              </div>
+              <div class="priority-option">
+                <input type="radio" name="editPriority" id="editPriorityModerate" value="moderate">
+                <label for="editPriorityModerate">
+                  <span class="priority-color-circle moderate"></span>
+                  Moderada
+                </label>
+              </div>
+              <div class="priority-option">
+                <input type="radio" name="editPriority" id="editPriorityFlexible" value="flexible">
+                <label for="editPriorityFlexible">
+                  <span class="priority-color-circle flexible"></span>
+                  Flexible
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="editModalCancel" type="button">Cancelar</button>
+        <button class="btn btn-primary" id="editModalSave" type="button">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== OPTIMIZATION RESULTS OVERLAY ====== -->
+  <div class="optimization-overlay" id="optimizationOverlay" aria-label="Resultados de la optimización">
+    <div class="optimization-card">
+      <div class="optimization-icon">⚡</div>
+      <h3 class="optimization-title">Optimización Completada</h3>
+      <div class="optimization-results" id="optimizationResults">
+        <!-- Populated by JS -->
+      </div>
+      <button class="btn btn-primary optimization-close-btn" id="optimizationClose">Entendido</button>
     </div>
   </div>
 

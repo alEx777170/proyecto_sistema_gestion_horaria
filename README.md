@@ -1,6 +1,6 @@
-# Sistema Adaptativo de Gestión Horaria
+# SmartSchedule FISI – Sistema Adaptativo de Gestión Horaria
 
-**Prototipo interactivo de alta fidelidad** para la gestión inteligente de horarios académicos.
+**Prototipo final interactivo de alta fidelidad** para la gestión inteligente de horarios académicos con optimización de tiempos muertos, resolución de conflictos y accesibilidad WCAG 2.1.
 
 ---
 
@@ -17,79 +17,107 @@
 
 ---
 
-## 🎯 Funcionalidades del Prototipo
+## 🎯 Funcionalidades del Prototipo Final
 
 ### Barra Superior
 | Elemento | Descripción |
 |----------|-------------|
-| **Título del sistema** | Muestra el nombre y contexto del semestre/semana actual. |
-| **Campana de notificaciones** 🔔 | Al hacer clic, despliega un panel con notificaciones simuladas (conflictos, actualizaciones). |
-| **Modo Accesibilidad** ♿ | Activa/desactiva un esquema de colores de alto contraste (ratio 4.5:1 según WCAG 2.1). |
+| **Título del sistema** | Muestra "SmartSchedule FISI" y el contexto del semestre/semana actual. |
+| **📊 Estadísticas** | Abre/cierra el panel inferior de estadísticas en tiempo real. |
+| **🔔 Notificaciones** | Despliega un panel con notificaciones simuladas (conflictos, actualizaciones). |
+| **♿ Accesibilidad** | Activa/desactiva un esquema de alto contraste WCAG 2.1 (ratio 4.5:1). |
 
 ### Panel Lateral (Sidebar)
-- **Pestaña "Cursos Disponibles"**: Muestra 6 cursos de ejemplo con código, grupo y nivel de prioridad.
-- **Pestaña "Pendientes"**: Muestra 4 tareas pendientes por asignar al calendario.
-- Cada tarjeta incluye un **ícono de arrastre** (seis puntos ⠿) indicando que es arrastrable.
-- Las tarjetas usan **código de colores semántico**:
+- **Pestaña "Cursos"**: 6 cursos con código, grupo y prioridad.
+- **Pestaña "Pendientes"**: 4 tareas pendientes por asignar.
+- **Checkbox de selección múltiple**: Permite seleccionar varios cursos a la vez.
+- **Barra de asignación batch**: Aparece al seleccionar cursos, permite asignarlos automáticamente.
+- **Código de colores semántico (Semáforo)**:
   - 🔴 **Rojo** = Urgente
   - 🟡 **Amarillo** = Moderada
   - 🟢 **Verde** = Flexible
 
 ### Calendario Semanal
-- Cuadrícula de **Lunes a Domingo**, con horas de **8:00 a 22:00** en el eje Y.
-- El día actual (Miércoles) aparece destacado con un indicador visual.
+- Cuadrícula de **Lunes a Domingo**, con horas de **8:00 a 22:00**.
+- Día actual (Miércoles) destacado con indicador visual.
 - Bloques pre-cargados simulando un horario existente.
+- **Drag & Drop intra-calendario**: mover bloques de una celda a otra.
 
 ---
 
 ## Escenarios Interactivos
 
 ### Escenario 1: Agregar Bloque ➕
-1. Haga clic en el botón **"+ Agregar Bloque"** (esquina superior derecha del calendario).
-2. Se abre un **modal CSS** donde puede ingresar:
-   - Nombre del curso (ej: "Álgebra")
-   - Código/Grupo
-   - Día de la semana
-   - Hora
-   - Prioridad (Urgente / Moderada / Flexible)
-3. Al guardar, el bloque aparece en la celda correspondiente con su color de prioridad.
-4. Se muestra una **notificación toast**: _"Recordatorio activado"_.
+1. Clic en **"+ Agregar Bloque"** (esquina superior derecha).
+2. Se abre un modal para ingresar: nombre, código, día, hora y prioridad.
+3. Al guardar, el bloque aparece en la celda con su color de prioridad.
+4. Se muestra una notificación toast de confirmación.
 
-### Escenario 2: Mover Tarea (Drag & Drop) 🖱️
-1. Vaya a la pestaña **"Pendientes"** en el panel lateral.
-2. **Arrastre** una tarjeta (mantenga clic en ella).
-3. **Suéltela** sobre una celda vacía del calendario.
-4. La tarjeta desaparece del panel lateral y aparece como un bloque en el calendario.
-5. Se muestra la notificación: _"Recordatorio activado"_.
+### Escenario 2: Drag & Drop 🖱️
+1. **Desde el sidebar**: arrastre una tarjeta sobre una celda vacía.
+2. **Intra-calendario**: arrastre un bloque ya colocado a otra celda vacía.
+3. El bloque se mueve con animación y se actualiza el estado.
 
-### Escenario 3: Conflicto Horario ⚠️
-1. Arrastre cualquier tarjeta sobre una **celda que ya contenga un bloque**.
-2. La celda se resalta con un **borde/fondo rojo** indicando conflicto.
-3. Aparece un **mensaje flotante temporal**: _"⚠️ Conflicto – Cambiar al Grupo 02"_.
-4. Al soltar, se muestra un toast con la sugerencia de cambiar de grupo.
-5. **El bloque NO se coloca** en la celda ocupada (se rechaza el drop).
+### Escenario 3: Selección Múltiple y Asignación Batch 🚀
+1. Active los checkboxes de varias tarjetas en el sidebar.
+2. Aparecerá la barra de asignación con el contador de seleccionados.
+3. Clic en **"🚀 Asignar"** para colocar todos automáticamente.
+
+### Escenario 4: Resolución de Conflictos ⚠️
+1. Arrastre una tarjeta sobre una celda **ya ocupada**.
+2. Se abre un **modal interactivo de resolución** con 4 opciones:
+   - 🔄 **Reemplazar**: quita el bloque existente y coloca el nuevo.
+   - 🔀 **Cambiar grupo**: busca un horario alternativo en otro grupo.
+   - 📍 **Mover al más cercano**: encuentra el espacio libre más próximo.
+   - ❌ **Cancelar**: no realiza cambios.
+3. Se muestran **sugerencias de horarios alternativos** disponibles.
+
+### Escenario 5: Editar / Eliminar Bloques ✏️
+1. Haga clic en un bloque del calendario.
+2. Aparece un **popover de detalle** con nombre, código, horario y prioridad.
+3. Opciones:
+   - **✏️ Editar**: abre un modal para cambiar nombre, código o prioridad.
+   - **🗑️ Eliminar**: remueve el bloque del calendario con animación.
+
+### Escenario 6: Optimización de Tiempos Muertos ⚡
+1. Clic en el botón **"⚡ Optimizar"** (junto a "Agregar Bloque").
+2. El sistema detecta gaps (horas vacías) entre bloques de cada día.
+3. Compacta los bloques eliminando tiempos muertos.
+4. Muestra un **overlay de resultados**: bloques movidos, horas liberadas y detalle.
+
+### Escenario 7: Panel de Estadísticas 📊
+1. Clic en el botón **📊** de la barra superior.
+2. Se abre un panel inferior con métricas en tiempo real:
+   - % de ocupación semanal
+   - Horas de tiempos muertos detectados
+   - Horas por prioridad (🔴🟡🟢)
+   - Total de bloques
+3. Las barras de progreso se animan dinámicamente.
 
 ---
 
-## Modo Accesibilidad
+## Modo Accesibilidad (WCAG 2.1 AA)
 
 Al activar el toggle de accesibilidad:
-- El esquema cambia a **fondo claro con texto oscuro**.
-- Los bordes se refuerzan para mejor visibilidad.
-- Los colores de prioridad mantienen un **ratio de contraste ≥ 4.5:1** (WCAG 2.1 AA).
-- Todos los elementos interactivos son **navegables por teclado** (Tab, Enter, Escape).
-- Se utilizan **atributos ARIA** (`role`, `aria-label`, `aria-checked`, `aria-modal`) en todo el DOM.
+- Esquema cambia a **fondo claro con texto oscuro** (contraste ≥ 4.5:1).
+- Bordes reforzados para mejor visibilidad.
+- **Focus visible mejorado**: outline + glow en todos los elementos interactivos.
+- **Skip Navigation**: enlace de salto al contenido principal (visible con Tab).
+- **ARIA Live Region**: anuncios dinámicos para lectores de pantalla.
+- **Navegación por teclado completa**: Tab, Enter, Escape, flechas en el calendario.
+- **Atributos ARIA**: `role`, `aria-label`, `aria-checked`, `aria-modal`, `aria-live`, `aria-selected`.
 
 ---
 
 ## Estructura del Proyecto
 
 ```
-adaptive-time-management/
-├── index.html    → Estructura HTML5 semántica
-├── styles.css    → Sistema de diseño con variables CSS (dark mode + accessibility)
-├── script.js     → Lógica interactiva (Drag & Drop, Modal, Toasts)
-└── README.md     → Este archivo
+proyecto_sistema_gestion_horaria/
+├── index.html         → Estructura HTML5 semántica (skip nav, modales, popover, stats panel)
+├── styles.css         → Sistema de diseño con tokens CSS, dark mode, accesibilidad, animaciones
+├── script.js          → Lógica interactiva completa (D&D, optimización, conflictos, edición)
+├── README.md          → Este archivo
+└── documentos/        → PDFs de entregables previos del curso
 ```
 
 ---
@@ -98,22 +126,19 @@ adaptive-time-management/
 
 | # | Limitación | Detalle |
 |---|-----------|---------|
-| 1 | **Sin persistencia de datos** | Los cambios se pierden al recargar la página. No hay localStorage ni backend. |
-| 2 | **Datos simulados** | Los cursos, tareas y notificaciones son datos de ejemplo codificados en `script.js`. |
+| 1 | **Sin persistencia de datos** | Los cambios se pierden al recargar. No hay localStorage ni backend. |
+| 2 | **Datos simulados** | Cursos, tareas y notificaciones son datos de ejemplo en `script.js`. |
 | 3 | **Sin autenticación** | No hay sistema de login ni roles de usuario. |
-| 4 | **Drag & Drop limitado** | Usa la API nativa HTML5 que puede tener variaciones menores entre navegadores. No funciona en dispositivos táctiles sin polyfill. |
-| 5 | **Sin responsividad completa** | El sidebar se oculta en pantallas < 900px. La cuadrícula del calendario requiere scroll horizontal en pantallas pequeñas. |
-| 6 | **Bloques de una hora** | Cada bloque ocupa exactamente una celda (1 hora). No hay soporte para clases de duración variable. |
-| 7 | **Sin edición/eliminación** | No se pueden editar ni eliminar bloques una vez colocados en el calendario. |
-| 8 | **Motor de optimización ausente** | La sugerencia "Cambiar al Grupo 02" es estática. No hay algoritmo real de resolución de conflictos. |
-| 9 | **Navegadores táctiles** | La API de Drag & Drop nativa no está soportada en la mayoría de navegadores móviles. Se recomienda usar en desktop. |
-| 10 | **Sin internacionalización** | La interfaz está fija en español. No hay soporte multi-idioma. |
+| 4 | **Drag & Drop en móviles** | La API nativa HTML5 no funciona en dispositivos táctiles sin polyfill. |
+| 5 | **Bloques de una hora** | Cada bloque ocupa exactamente 1 hora. No hay soporte para duración variable. |
+| 6 | **Optimización heurística** | El algoritmo de compactación es greedy, no óptimo global. |
+| 7 | **Sin internacionalización** | La interfaz está fija en español. |
 
 ---
 
 ## Tecnologías Utilizadas
 
-- **HTML5** – Estructura semántica con atributos ARIA
+- **HTML5** – Estructura semántica con atributos ARIA extensivos
 - **CSS3** – Variables CSS, Grid, Flexbox, animaciones, glassmorphism, `backdrop-filter`
 - **JavaScript (ES6+)** – Vanilla JS, API nativa de Drag & Drop HTML5
 - **Google Fonts** – Tipografía Inter
@@ -123,10 +148,12 @@ adaptive-time-management/
 ## Notas de Diseño
 
 - **Tema oscuro** por defecto con estética glassmorphism y gradientes sutiles.
-- **Micro-animaciones** en hover, drag, toast notifications y transiciones de modal.
-- **Código semántico de colores** integrado en tarjetas, bloques y etiquetas de prioridad.
-- **Sistema de diseño basado en tokens CSS** (`--bg-primary`, `--accent-primary`, etc.) para fácil personalización.
+- **Micro-animaciones** en hover, drag, toast, popover, modales, optimización y bloques.
+- **Código semántico de colores tipo semáforo** (🔴🟡🟢) integrado en tarjetas, bloques y labels.
+- **Sistema de diseño basado en tokens CSS** para fácil personalización.
+- **Accesibilidad WCAG 2.1 nivel AA** con modo de alto contraste.
 
 ---
 
-*Prototipo desarrollado como demostración de concepto – Junio 2026*
+*Prototipo Final desarrollado como demostración de concepto – Julio 2026*
+*Grupo 02 – Diseño de Interfaces de Usuario – FISI*
