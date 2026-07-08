@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="SmartSchedule FISI – Sistema Adaptativo de Gestión Horaria. Prototipo final interactivo para la gestión inteligente de horarios académicos con optimización de tiempos muertos y resolución de conflictos.">
+  <meta name="description"
+    content="SmartSchedule FISI – Sistema Adaptativo de Gestión Horaria. Prototipo final interactivo para la gestión inteligente de horarios académicos con optimización de tiempos muertos y resolución de conflictos.">
   <meta name="keywords" content="horario, gestión académica, FISI, SmartSchedule, optimización">
   <meta name="author" content="Grupo 02 – DIU FISI">
   <title>SmartSchedule FISI – Sistema Adaptativo de Gestión Horaria</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
 </head>
+
 <body>
 
   <!-- Skip Navigation (Accesibilidad WCAG 2.1) -->
@@ -33,12 +37,14 @@
 
       <div class="topbar-right">
         <!-- Stats Toggle -->
-        <button class="topbar-icon-btn" id="statsToggleBtn" aria-label="Panel de estadísticas" title="Estadísticas del horario">
+        <button class="topbar-icon-btn" id="statsToggleBtn" aria-label="Panel de estadísticas"
+          title="Estadísticas del horario">
           📊
         </button>
 
         <!-- Notification Bell -->
-        <button class="topbar-icon-btn notification-btn" id="notificationBtn" aria-label="Notificaciones" title="Notificaciones">
+        <button class="topbar-icon-btn notification-btn" id="notificationBtn" aria-label="Notificaciones"
+          title="Notificaciones">
           🔔
           <span class="notification-badge" id="notifBadge"></span>
         </button>
@@ -49,14 +55,16 @@
           <div class="notification-item">
             <div class="notification-item-icon info">📘</div>
             <div>
-              <div class="notification-item-text">El horario de <strong>Cálculo I</strong> fue actualizado al Grupo 03.</div>
+              <div class="notification-item-text">El horario de <strong>Cálculo I</strong> fue actualizado al Grupo 03.
+              </div>
               <div class="notification-item-time">Hace 12 min</div>
             </div>
           </div>
           <div class="notification-item">
             <div class="notification-item-icon warn">⚠️</div>
             <div>
-              <div class="notification-item-text">Conflicto detectado: <strong>Álgebra</strong> y <strong>Física II</strong> coinciden el Miércoles 10:00.</div>
+              <div class="notification-item-text">Conflicto detectado: <strong>Álgebra</strong> y <strong>Física
+                  II</strong> coinciden el Miércoles 10:00.</div>
               <div class="notification-item-time">Hace 1 hora</div>
             </div>
           </div>
@@ -70,7 +78,8 @@
         </div>
 
         <!-- Dark/Light Mode Toggle -->
-        <div class="accessibility-toggle" id="accessibilityToggle" role="switch" aria-checked="false" aria-label="Cambiar entre modo oscuro y modo claro" tabindex="0" title="Cambiar tema (Oscuro / Claro)">
+        <div class="accessibility-toggle" id="accessibilityToggle" role="switch" aria-checked="false"
+          aria-label="Cambiar entre modo oscuro y modo claro" tabindex="0" title="Cambiar tema (Oscuro / Claro)">
           <span class="accessibility-toggle-label" id="themeToggleLabel">🌙 Modo Oscuro</span>
           <div class="toggle-switch"></div>
         </div>
@@ -82,10 +91,12 @@
 
       <!-- Tabs -->
       <div class="sidebar-tabs" role="tablist">
-        <button class="sidebar-tab active" id="tabCourses" role="tab" aria-selected="true" aria-controls="panelCourses" data-tab="courses">
+        <button class="sidebar-tab active" id="tabCourses" role="tab" aria-selected="true" aria-controls="panelCourses"
+          data-tab="courses">
           📚 Cursos
         </button>
-        <button class="sidebar-tab" id="tabPending" role="tab" aria-selected="false" aria-controls="panelPending" data-tab="pending">
+        <button class="sidebar-tab" id="tabPending" role="tab" aria-selected="false" aria-controls="panelPending"
+          data-tab="pending">
           📋 Pendientes
         </button>
       </div>
@@ -126,11 +137,13 @@
           <span class="calendar-week-label">16 – 22 Junio, 2026</span>
         </div>
         <div class="calendar-header-right">
-          <button class="btn-optimize" id="btnOptimize" aria-label="Optimizar tiempos muertos del horario" title="Optimizar horario automáticamente">
+          <button class="btn-optimize" id="btnOptimize" aria-label="Optimizar tiempos muertos del horario"
+            title="Optimizar horario automáticamente">
             <span class="optimize-icon">⚡</span>
             Optimizar
           </button>
-          <button class="btn-add-block" id="btnAddBlock" aria-label="Agregar nuevo bloque horario" title="Agregar nuevo bloque">
+          <button class="btn-add-block" id="btnAddBlock" aria-label="Agregar nuevo bloque horario"
+            title="Agregar nuevo bloque">
             <span class="plus-icon">+</span>
             Agregar Bloque
           </button>
@@ -148,7 +161,8 @@
       <div class="stats-panel" id="statsPanel" aria-label="Panel de estadísticas del horario">
         <div class="stats-panel-header">
           <h2 class="stats-panel-title">📊 Estadísticas del Horario</h2>
-          <button class="stats-panel-close" id="statsPanelClose" aria-label="Cerrar panel de estadísticas">&times;</button>
+          <button class="stats-panel-close" id="statsPanelClose"
+            aria-label="Cerrar panel de estadísticas">&times;</button>
         </div>
         <div class="stats-grid">
           <div class="stat-card">
@@ -293,7 +307,8 @@
   </div>
 
   <!-- ====== MODAL: Conflict Resolution ====== -->
-  <div class="modal-overlay" id="conflictModalOverlay" role="dialog" aria-modal="true" aria-labelledby="conflictModalTitle">
+  <div class="modal-overlay" id="conflictModalOverlay" role="dialog" aria-modal="true"
+    aria-labelledby="conflictModalTitle">
     <div class="modal conflict-modal">
       <div class="modal-header conflict-modal-header">
         <div class="conflict-header-left">
@@ -411,4 +426,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>
